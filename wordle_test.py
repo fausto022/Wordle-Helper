@@ -1,25 +1,6 @@
 import sys
 import string
 
-
-
-#def palabras_posibles(pal: str, d: dict, pos: int, restantes: list[chr], out: list[str]):
-#    if pos == len(d)-1: #si estoy en la última letra
-#        if d[pos] == '': #y si es vacía
-#            for letter in restantes:
-#                palabra_actual = pal + letter + '\n'
-#                if (palabra_actual in lista_palabras):out.append(palabra_actual)
-#        else:            
-#            palabra_actual = pal + d[pos] + '\n' #imprimo la palabra como viene
-#            if (palabra_actual in lista_palabras):out.append(palabra_actual)
-            
-#    else:
-#        if d[pos] == '':
-#            for letter in restantes:
-#                palabras_posibles(pal + letter, d, pos + 1, restantes, out)
-#        else:
-#            palabras_posibles(pal + d[pos], d, pos + 1, restantes, out)
-
 def char_del_usuario(prompt: str) -> chr:
     """Le pide un caracter al usuario, en caso de apretar enter
     sin ningun caracter, devuelve falso"""
