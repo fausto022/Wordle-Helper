@@ -5,7 +5,7 @@
     <ProjectGuid>a77bd5c9-d1ee-49bb-a753-fb75771f68ad</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>wordle_solver\__main__.py</StartupFile>
+    <StartupFile>wordle_solver\__init__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -32,23 +32,23 @@
     <Compile Include="wordle_solver\wordle_solver.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="wordle_env\">
-      <Id>wordle_env</Id>
-      <Version>3.9</Version>
-      <Description>wordle_env (Python 3.9 (64-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X64</Architecture>
-    </Interpreter>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="wordle_tests\" />
     <Folder Include="wordle_solver\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
     <Content Include="Requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="wordle_env\">
+      <Id>wordle_env</Id>
+      <Version>0.0</Version>
+      <Description>wordle_env (Python 3.10 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

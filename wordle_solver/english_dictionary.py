@@ -1,21 +1,27 @@
 import string
 
 class english_dictionary():
-    """handles all the relevant information from an english dictionary"""    
+    """handles all the relevant information from an english dictionary."""
 
-    def __init__(self, path: str=''): 
+    def __init__(self, path: str=''):
         """Reads the dictionary from memory, and stores its contents.
-        Also gets the alphabet from the string library
+        Also gets the alphabet from the string library.
         """
-        #TODO: Add path functionality
-        self.alphabet = list(string.ascii_lowercase) # 26 letters from the english alphabet, in [chr] format
+        #TODO: Add path functionality.
+        self._alphabet = string.ascii_lowercase # 26 letters from the english alphabet, in [chr] format.
 
-        #reads both dictionaries from memory and stores them in different variables
+        #Reads a dictionary from memory.
         with open("words_5.txt", "r") as f:
-            self.word_list_1 = f.read().split("\n") 
-        with open("words_5_2.txt", "r") as f:
-            self.word_list_2 = f.read().split(' ')
+            self.words_list = f.read().split(' ')
 
-        
-
-
+    def words_by_letter(self, words: list[str] = None) -> dict[chr: set(str)]:
+        """Takes in a list of words, and returns a dictonary mapping each letter of the alphabet to a set
+        of the words in the list that contain that letter.
+        """
+        if not words:
+            words = self.words_list
+        _words_by_letter = dict.fromkeys(self._alphabet, set())
+        for word in words:
+            for letter in words:
+                _words_by_letter[letter].add(word)
+        return _words_by_letter
