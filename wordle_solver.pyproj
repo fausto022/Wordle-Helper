@@ -23,6 +23,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="wordle_solver\english_dictionary.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="wordle_solver\TUI.py" />
     <Compile Include="wordle_solver\__init__.py" />
     <Compile Include="wordle_solver\__main__.py" />
