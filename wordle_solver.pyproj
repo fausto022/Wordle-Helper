@@ -29,7 +29,7 @@
     <Compile Include="wordle_solver\TUI.py" />
     <Compile Include="wordle_solver\__init__.py" />
     <Compile Include="wordle_solver\__main__.py" />
-    <Compile Include="wordle_solver\wordle_solver.py" />
+    <Compile Include="wordle_solver\solver.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wordle_tests\" />

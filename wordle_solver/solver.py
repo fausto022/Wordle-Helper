@@ -1,20 +1,19 @@
 from wordle_solver import english_dictionary as e_d
-from wordle_solver import lists
 from enum import Enum
 
 
 
-class wordle_solver():
+class solver():
     """Provides the methods to find the optimal word, and a list of all the possible words."""
 
     def __init__(self, path: str=''): #TODO: add path functionality.
-        self._e_d = e_d.english_dictionary()
-        self._greens = {1: '', 2: '', 3: '', 4: '', 5: ''}
-        self._yellows = {1: [], 2: [], 3: [], 4: [], 5: []}
+        self._e_d = e_d.english_dictionary(path)
+        self._greens = {0: '', 1: '', 2: '', 3: '', 4: ''}
+        self._yellows = {0: [], 1: [], 2: [], 3: [], 4: []}
         self._discarded = []
-        self._valid_words = self._e_d.words_list
+        self.valid_words = self._e_d.words_list
 
-    def is_valid(self, word) -> bool:
+    def _is_valid(self, word) -> bool:
         """Given a word, checks if it could be a possible correct answer."""
         valid_word = True
         for i, l in enumerate(word):
@@ -42,14 +41,31 @@ class wordle_solver():
 
     def _filter_words(self) -> None:
         """Update the list of all valid words with the current information."""
-        self._valid_words = [word for word in self._valid_words if self.is_valid(word)]
+        self.valid_words = [word for word in self.valid_words if self._is_valid(word)]
+    
+    def _how_many_discards(self, words_x_letter: dict[chr: list[str]],word: str) -> int:
+        """Using the words_x_letter info, this function tells you how useful guessing a word would be, 
+        based on how much its letters appear in the remaining possible words.
+        """
+        words_it_affects = set()
+        for letter in word:
+            words_it_affects.union(words_x_letter[letter])
+        return len(words_it_affects)
 
-    def choose_word(self, valid_words: bool = None) -> str:
+    def choose_word(self, any_word: bool = True) -> str:
         """ 
         """
         # TODO: rethink the working of this function.
         # For if you want to print BOTH best words (the valid and the non valid) you would have to run this function TWICE, which is not optimal.
-        if valid_words:valid_words = self._valid_words
-        words_x_letter = self._e_d.words_by_letter(valid_words)
-        best_word = max(words_x_letter.keys(), key=lambda x: words_x_letter[x])
+
+        #create a dictionary of the form {char: list[word]}, to see which letter maps to which of the remaining valid words.        
+        words_x_letter = self._e_d.words_by_letter(self.valid_words)
+        
+        if any_word:
+            words_to_choose_from = self._e_d.words_list
+        else:
+            words_to_choose_from = self.valid_words
+        best_word = max(words_to_choose_from, key=lambda x: self._how_many_discards(words_x_letter, x))
         return best_word
+
+    
