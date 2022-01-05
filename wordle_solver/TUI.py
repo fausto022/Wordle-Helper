@@ -11,11 +11,12 @@ def run_guessing_loop() -> int:
 4)Keep guessing.
 ?)Help.
 """
-    difference = """The difference between options 1) and 2), is that the first option could be a word that doesn't match your greens, yellows or grays, but
-will help you reduce the scope of possible correct words.\nThe second option will give you the answer that reduces the scope as much as possible while
-matching your greens, yellows and grays."""
+    difference = """The difference between options 1) and 2), is that the first option could be a word that doesn't match your greens, 
+    yellows or grays, but will help you reduce the scope of possible correct words.
+    The second option will give you the word that reduces the scope as much as possible while
+    matching your greens, yellows and grays."""
 
-    solver_instance = solver()       
+    solver_instance = solver("5_letter_words_ver.2.txt")       
     print(f"There are {len(solver_instance.valid_words)} possible words.")
     while True:
         input("Press enter when you are ready to guess.")        

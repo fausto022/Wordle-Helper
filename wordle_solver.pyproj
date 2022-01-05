@@ -5,7 +5,7 @@
     <ProjectGuid>a77bd5c9-d1ee-49bb-a753-fb75771f68ad</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>wordle_solver\__init__.py</StartupFile>
+    <StartupFile>wordle_solver\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -13,6 +13,10 @@
     <Name>wordle_solver</Name>
     <RootNamespace>wordle_test</RootNamespace>
     <InterpreterId>MSBuild|wordle_env|$(MSBuildProjectFullPath)</InterpreterId>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>
+    </UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +27,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="testing\tests_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="wordle_solver\english_dictionary.py">
       <SubType>Code</SubType>
     </Compile>
@@ -30,12 +37,19 @@
     <Compile Include="wordle_solver\__init__.py" />
     <Compile Include="wordle_solver\__main__.py" />
     <Compile Include="wordle_solver\solver.py" />
+    <Compile Include="testing\__init__.py" />
+    <Compile Include="testing\tests_ed.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wordle_tests\" />
+    <Folder Include="data\" />
+    <Folder Include="testing\" />
     <Folder Include="wordle_solver\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data\5_letter_words_26_words.txt.txt" />
+    <Content Include="data\5_letter_words_ver.1.txt" />
+    <Content Include="data\5_letter_words_ver.2.txt" />
+    <Content Include="data\words_complete.txt" />
     <Content Include="README.md" />
     <Content Include="Requirements.txt" />
   </ItemGroup>
