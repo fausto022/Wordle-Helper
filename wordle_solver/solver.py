@@ -6,8 +6,8 @@ from enum import Enum
 class solver():
     """Provides the methods to find the optimal word, and a list of all the possible words."""
 
-    def __init__(self, path: str=''): #TODO: add path functionality.
-        self._e_d = e_d.english_dictionary(path)
+    def __init__(self, dictionary_file: str): #TODO: add path functionality.
+        self._e_d = e_d.english_dictionary(dictionary_file)
         self._greens = {0: '', 1: '', 2: '', 3: '', 4: ''}
         self._yellows = {0: [], 1: [], 2: [], 3: [], 4: []}
         self._discarded = []
