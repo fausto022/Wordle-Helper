@@ -49,6 +49,7 @@
     <Content Include="data\5_letter_words_26_words.txt.txt" />
     <Content Include="data\5_letter_words_ver.1.txt" />
     <Content Include="data\5_letter_words_ver.2.txt" />
+    <Content Include="data\b_words.txt" />
     <Content Include="data\words_complete.txt" />
     <Content Include="README.md" />
     <Content Include="Requirements.txt" />
