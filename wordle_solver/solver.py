@@ -20,9 +20,13 @@ class solver():
             # for the word to be valid, all letters have to be valid.
             if self._greens[i] != '':
                 valid_letter = (l == self._greens[i])
-            else:
+            else:                
                 valid_letter = l not in self._yellows[i] and l not in self._discarded
-            valid_word = valid_word and valid_letter 
+            valid_word = valid_word and valid_letter
+        
+        for yellows_list in self._yellows.values():
+            if any(l not in word for l in yellows_list): valid_word = False
+        
         return valid_word
         
     def add_guess(self, greens: str, yellows: str, grays: str) -> None:
@@ -43,13 +47,13 @@ class solver():
         """Update the list of all valid words with the current information."""
         self.valid_words = [word for word in self.valid_words if self._is_valid(word)]
     
-    def _how_many_discards(self, words_x_letter: dict[chr: list[str]],word: str) -> int:
+    def _how_many_discards(self, words_by_letter: dict[chr: list[str]],word: str) -> int:
         """Using the words_x_letter info, this function tells you how useful guessing a word would be, 
         based on how much its letters appear in the remaining possible words.
         """
         words_it_affects = set()
         for letter in word:
-            words_it_affects.union(words_x_letter[letter])
+            words_it_affects = words_it_affects | words_by_letter[letter]
         return len(words_it_affects)
 
     def choose_word(self, any_word: bool = True) -> str:
