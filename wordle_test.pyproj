@@ -3,14 +3,21 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a77bd5c9-d1ee-49bb-a753-fb75771f68ad</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>wordle_test.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>wordle_solver\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>wordle_test</Name>
+    <Name>wordle_solver</Name>
     <RootNamespace>wordle_test</RootNamespace>
+    <InterpreterId>
+    </InterpreterId>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>
+    </UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +28,27 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="wordle_test.py" />
+    <Compile Include="testing\tests_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wordle_solver\english_dictionary.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wordle_solver\TUI.py" />
+    <Compile Include="wordle_solver\__init__.py" />
+    <Compile Include="wordle_solver\__main__.py" />
+    <Compile Include="wordle_solver\solver.py" />
+    <Compile Include="testing\__init__.py" />
+    <Compile Include="testing\tests_ed.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="testing\" />
+    <Folder Include="wordle_solver\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data\5_letter_words.txt" />
+    <Content Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
