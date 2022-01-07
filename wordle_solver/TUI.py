@@ -5,18 +5,17 @@ from wordle_solver.solver import solver
 
 def run_guessing_loop() -> int:
     """Runs the main loop for your wordle_helper"""
-    options = """1)Show me the best word for the current info.
-2)Show me the best possible guess for the current info.
+    options = """1)Show me the word with maximum coverage for the current info.
+2)Show me the best guess with maximum coverage for the current info.
 3)Show me a list of the possible guesses.
 4)Keep guessing.
 ?)Help.
 """
-    difference = """The difference between options 1) and 2), is that the first option could be a word that doesn't match your greens, 
-    yellows or grays, but will help you reduce the scope of possible correct words.
-    The second option will give you the word that reduces the scope as much as possible while
-    matching your greens, yellows and grays."""
+    difference = """The difference between options 1) and 2), is that the first option will try to affect as many remaining words as possible without restricting itself to possible guesses, since the word that minimizes the scope COULD contain a discarded letter.
+    The second option will give you the word that reduces the scope as much as possible while matching your greens, yellows and grays, meaning that if you are aim is to get it right in the next guess, and don't care for how many words your guess will affect, this is the word you should choose.
+    Note: Testing has proven this heuristic to not always be right, and sometimes using option 1) will leave you with more possible guesses than option 2), making option 2) a strictly better guess."""
 
-    solver_instance = solver("5_letter_words_ver.2.txt")       
+    solver_instance = solver("5_letter_words.txt")       
     print(f"There are {len(solver_instance.valid_words)} possible words.")
     while True:
         input("Press enter when you are ready to guess.")        
@@ -28,8 +27,7 @@ def run_guessing_loop() -> int:
         print(f"There are {len(solver_instance.valid_words)} possible words remaining.")        
         print(options, end = '')
         while True:
-            user_option = input("-> ")
-            print('')
+            user_option = input("\n-> ")
             match user_option:
                 case '1':
                     print("Option 1 selected")
@@ -50,23 +48,6 @@ def run_guessing_loop() -> int:
                 case _:
                     print("Try again...")
     return 0
-
-def _char_from_user(prompt: str) -> chr:
-    """Ask the user for a character for an alphabetic character, can be empty."""
-    user_input = input(prompt).lower()
-    if user_input.isalpha() and len(user_input) == 1 or user_input == '':
-        return user_input
-    else:
-        return char_from_user(prompt)
-
-def _list_of_chars_from_user(prompt: str) -> list[chr]:
-    """Prompts the user for a list of alphabetic characters in the form 'xyabzd', can be empty"""
-    user_input = input(prompt)
-    if user_input == '':
-        return []
-    elif not user_input.isalpha():
-        list_of_chars_from_user(prompt)
-    return [char for char in user_input]
 
 def _guess_from_user(prompt: str, enforce_format: bool = True) -> str:
     """Prompts the user for their green or yellow letters, 

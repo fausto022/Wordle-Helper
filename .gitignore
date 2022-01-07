@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/data/5_letter_words_all_alike_26.txt
+/data/5_letter_words_52_words.txt
