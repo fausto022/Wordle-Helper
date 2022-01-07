@@ -20,7 +20,7 @@ class solver():
             # for the word to be valid, all letters have to be valid.
             if self._greens[i] != '':
                 valid_letter = (l == self._greens[i])
-            else:                
+            else:
                 valid_letter = l not in self._yellows[i] and l not in self._discarded
             valid_word = valid_word and valid_letter
         
@@ -53,7 +53,11 @@ class solver():
         """
         words_it_affects = set()
         for letter in word:
-            words_it_affects = words_it_affects | words_by_letter[letter]
+            has_yellow = False
+            if any(letter in yellows_list for yellows_list in self._yellows.values()): has_yellow = True
+            #TODO: optimize 'cus wtf
+            if letter not in self._greens.values() and has_yellow == False:
+                words_it_affects = words_it_affects | words_by_letter[letter]
         return len(words_it_affects)
 
     def choose_word(self, any_word: bool = True) -> str:
@@ -70,6 +74,7 @@ class solver():
         else:
             words_to_choose_from = self.valid_words
         best_word = max(words_to_choose_from, key=lambda x: self._how_many_discards(words_x_letter, x))
+        print(f"Affects {self._how_many_discards(words_x_letter, best_word)} words.")
         return best_word
 
     
