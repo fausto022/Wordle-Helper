@@ -5,12 +5,12 @@ from enum import Enum
 
 class solver():
     """Provides the methods to find the optimal word, and a list of all the possible words."""
-
-    def __init__(self, dictionary_file: str): #TODO: add path functionality.
+    def __init__(self, dictionary_file: str):
         self._e_d = e_d.english_dictionary(dictionary_file)
         self._greens = {0: '', 1: '', 2: '', 3: '', 4: ''}
         self._yellows = {0: [], 1: [], 2: [], 3: [], 4: []}
-        self._discarded = []
+        self._all_yellows = set()
+        self._discarded = set()
         self.valid_words = self._e_d.words_list
 
     def _is_valid(self, word) -> bool:
@@ -24,8 +24,7 @@ class solver():
                 valid_letter = l not in self._yellows[i] and l not in self._discarded
             valid_word = valid_word and valid_letter
         
-        for yellows_list in self._yellows.values():
-            if any(l not in word for l in yellows_list): valid_word = False
+        if any(l not in word for l in self._all_yellows): valid_word = False
         
         return valid_word
         
@@ -39,8 +38,10 @@ class solver():
         for k, l in enumerate(greens):
             if l != '_':self._greens[k] = l
         for k, l in enumerate(yellows):
-            if l != '_':self._yellows[k].append(l)
-        self._discarded = self._discarded + list(grays)
+            if l != '_':
+                self._yellows[k].append(l)
+                self._all_yellows.add(l)
+        self._discarded = self._discarded | set(grays)
         self._filter_words()
 
     def _filter_words(self) -> None:
@@ -52,23 +53,16 @@ class solver():
         based on how much its letters appear in the remaining possible words.
         """
         words_it_affects = set()
-        for letter in word:
-            has_yellow = False
-            if any(letter in yellows_list for yellows_list in self._yellows.values()): has_yellow = True
-            #TODO: optimize 'cus wtf
-            if letter not in self._greens.values() and has_yellow == False:
+        for letter in word:            
+            if (letter not in self._greens.values()) and (letter not in self._all_yellows):
                 words_it_affects = words_it_affects | words_by_letter[letter]
         return len(words_it_affects)
 
     def choose_word(self, any_word: bool = True) -> str:
         """ 
         """
-        # TODO: rethink the working of this function.
-        # For if you want to print BOTH best words (the valid and the non valid) you would have to run this function TWICE, which is not optimal.
-
-        #create a dictionary of the form {char: list[word]}, to see which letter maps to which of the remaining valid words.        
-        words_x_letter = self._e_d.words_by_letter(self.valid_words)
-        
+        #create a dictionary of the form {char: list[word]}, to see which letter maps to which of the remaining valid words.       
+        words_x_letter = self._e_d.words_by_letter(self.valid_words)       
         if any_word:
             words_to_choose_from = self._e_d.words_list
         else:
@@ -76,5 +70,3 @@ class solver():
         best_word = max(words_to_choose_from, key=lambda x: self._how_many_discards(words_x_letter, x))
         print(f"Affects {self._how_many_discards(words_x_letter, best_word)} words.")
         return best_word
-
-    

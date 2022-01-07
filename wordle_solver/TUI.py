@@ -1,7 +1,7 @@
 """Handles the prompting on the terminal, collects the user's data about their game, and runs the main loop of the program"""
 
 from typing import Match
-from wordle_solver.solver import solver
+from wordle_solver import solver
 
 def run_guessing_loop() -> int:
     """Runs the main loop for your wordle_helper"""
@@ -15,7 +15,7 @@ def run_guessing_loop() -> int:
     The second option will give you the word that reduces the scope as much as possible while matching your greens, yellows and grays, meaning that if you are aim is to get it right in the next guess, and don't care for how many words your guess will affect, this is the word you should choose.
     Note: Testing has proven this heuristic to not always be right, and sometimes using option 1) will leave you with more possible guesses than option 2), making option 2) a strictly better guess."""
 
-    solver_instance = solver("5_letter_words.txt")       
+    solver_instance = solver.solver("5_letter_words.txt")       
     print(f"There are {len(solver_instance.valid_words)} possible words.")
     while True:
         input("Press enter when you are ready to guess.")        
