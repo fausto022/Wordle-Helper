@@ -12,7 +12,8 @@
     <OutputPath>.</OutputPath>
     <Name>wordle_solver</Name>
     <RootNamespace>wordle_test</RootNamespace>
-    <InterpreterId>MSBuild|wordle_env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>
+    </InterpreterId>
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>
@@ -48,18 +49,6 @@
   <ItemGroup>
     <Content Include="data\5_letter_words.txt" />
     <Content Include="README.md" />
-    <Content Include="Requirements.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Interpreter Include="wordle_env\">
-      <Id>wordle_env</Id>
-      <Version>0.0</Version>
-      <Description>wordle_env (Python 3.10 (64-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X64</Architecture>
-    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
