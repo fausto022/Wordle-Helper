@@ -6,7 +6,7 @@ from wordle_solver import TUI
 
 
 def main():    
-    TUI.run_guessing_loop()
+    pass
 
 if __name__ == "__main__":
     sys.exit(int(main() or 0))

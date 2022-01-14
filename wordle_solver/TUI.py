@@ -1,7 +1,11 @@
 """Handles the prompting on the terminal, collects the user's data about their game, and runs the main loop of the program"""
 
-from wordle_solver.solver import solver #it's the only class in the module, so I'm importing it directly :)
 import curses
+import threading
+import time
+from random import choice
+
+from wordle_solver.solver import solver #it's the only class in the module, so I'm importing it directly :)
 
 #renamings
 (down, up) = (-1, 1)
@@ -11,26 +15,11 @@ import curses
 def isLetter(key: int) -> bool:
     return (ord('A') <= key <= ord('Z') or ord('a') <= key <= ord('z'))
 
-class curses_message:
-    def __init__(self, window: 'curses._CursesWindow', y: int, x: int, message: str = '') -> None:
+class guess:    
+    def __init__(self, window: 'curses._CursesWindow', y: int, x: int) -> None:        
         self._pWindow = window #assign parent window
-        self._message = list(message) #as a list because we need to modify it in the future
         self._y = y            #assign the position in the parent window
         self._x = x            #assign the position in the parent window
-
-    def translate_to(self, y: int, x: int)-> None:
-        """Moves the guess to another point on the window."""
-        self._y = y
-        self._x = x
-
-    def draw_message(self) -> None:
-        """Displays the message in its current position"""
-        #This function won't be used very much but it's still nice to have, even if for debugging purposes
-        self._pWindow.addstr(self._message)
-
-class guess(curses_message):    
-    def __init__(self, window: 'curses._CursesWindow', y: int, x: int) -> None:
-        super().__init__(window, y, x)
         self.letters = [{'l': '_', 'c': 0} for _ in range(5)]
         self.pos = 0
 
@@ -89,10 +78,15 @@ class guess(curses_message):
             pos = self.pos 
         self.letters[self.pos]['l'] = l 
 
+    def translate_to(self, y: int, x: int)-> None:
+        """Moves the guess to another point on the window."""
+        self._y = y
+        self._x = x
+
     def translate_up(self, i: int = 1) -> None:
         """Moves the guess one line closer to the top edge."""
         for _ in range(i):
-            super().translate_to(self._y - 1, self._x)
+            self.translate_to(self._y - 1, self._x)
         
 
 class guessing_interface:    
@@ -101,8 +95,8 @@ class guessing_interface:
         self.length = 24
         self.width = 27
         self._y = int(self.length * 5/6)
-        self._x = int((self.width/2) - 5)
-        self._window = curses.newwin(24, 26, y, x)
+        self._x = int((self.width/2) - 4.5)
+        self._window = curses.newwin(self.length, self.width, y, x)
         self._guess = guess(self._window, self._y, self._x)
         self._past_guesses = []
 
@@ -120,16 +114,23 @@ class guessing_interface:
 
         #Create a couple windows to display information
         self._exploratory_guess = curses.newwin(1, 24, 1, 1)
-        self._exploratory_guess.addstr("Exploratory: stoae.")
-        self._exploratory_guess.refresh()
+        self._display_message(self._exploratory_guess, "Exploratory: stoae.")
+
         self._valid_guess = curses.newwin(1, 24, 2, 1)
-        self._valid_guess.addstr("Correct: stoae.")
-        self._valid_guess.refresh()
+        self._display_message(self._valid_guess, "Correct: stoae.")
+
+        #create a separate window for the threaded display
+        self.possibles_display = curses.newwin(1, 8, 7, int(self.width/2 - 2.5))
+        #create a thread to show random words in the middle of the screens
+        self.randoms_thread = threading.Thread(target = self._display_random_timed, args=[self.possibles_display])
+        self.randoms_thread.daemon = True
+        self.randoms_thread.start()
+
 
     def _blank_prompt(self) -> None: 
         self._window.addstr(self._y-1, self._x, "#          ") #erases the old cursor
         self._window.addstr(self._y+1, self._x, "#          ") #erases the old cursor
-        self._window.addstr(self._y, self._x, "_ _ _ _ _ ")
+        self._window.addstr(self._y, self._x, "_ _ _ _ _")
         self._guess = guess(self._window, self._y, self._x)
         self._window.refresh()
 
@@ -158,14 +159,12 @@ class guessing_interface:
             self._solver.add_guess(self._guess.letters)
 
             #display the new words
-            best_exploratory, best_valid = self._solver.choose_word()            
-            self._exploratory_guess.addstr(0, 0, "Exploratory: " + best_exploratory + '.')
-            self._valid_guess.addstr(0, 0, "Correct: " + best_valid + '.')
-            self._exploratory_guess.refresh()
-            self._valid_guess.refresh()
+            best_exploratory, best_valid = self._solver.choose_word()
+            self._display_message(self._exploratory_guess, "Exploratory: " + best_exploratory + '.')
+            self._display_message(self._valid_guess, "Correct: " + best_valid + '.')
 
             #Only create a new prompt if we are not at the last guess
-            if len(self._past_guesses) < 6:
+            if len(self._past_guesses) < 5:
                 self._past_guesses.append(self._guess)
                 for past_guess in self._past_guesses:
                     past_guess.translate_up(2)
@@ -197,11 +196,21 @@ class guessing_interface:
                 self._submit_guess()                    
             self._window.refresh()
 
+    def _display_message(self, screen: 'curses._CursesWindow', message: str, y: int = 0, x: int = 0) -> None:
+        screen.addstr(y, x, message)
+        screen.refresh()
+
+    def _display_random_timed(self, screen: 'curses._CursesWindow') -> None:
+        while True:
+            self._display_message(screen, choice(self._solver.valid_words))
+            time.sleep(1)
+
+
 def main(screen: 'curses._CursesWindow'):
     #curses settings
     curses.initscr()
     curses.start_color()
-    curses.resize_term(24, 26) #resize the terminal so it fits our windows nicely
+    curses.resize_term(24, 27) #resize the terminal so it fits our windows nicely
     curses.curs_set(0) #make cursor invisible
     curses.raw() #disable special inputs like enter/return
  

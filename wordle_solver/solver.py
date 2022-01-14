@@ -27,7 +27,7 @@ class solver():
         
         return valid_word
         
-    def add_guess(self, guess: list[{chr, int}]) -> None:
+    def add_guess(self, guess: list[dict[chr, int]]) -> None:
         """Process the information coming from this new guess. This function also applies different
         heuristics/inferences I came up with to further narrow the information provided by each guess.
         Automatically updates the list of valid words.
