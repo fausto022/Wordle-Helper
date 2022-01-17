@@ -555,7 +555,7 @@
     <Compile Include="wordle_env\Lib\site-packages\setuptools\__init__.py" />
     <Compile Include="wordle_env\Lib\site-packages\_distutils_hack\override.py" />
     <Compile Include="wordle_env\Lib\site-packages\_distutils_hack\__init__.py" />
-    <Compile Include="wordle_solver\english_dictionary.py">
+    <Compile Include="wordle_solver\words.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="wordle_solver\TUI.py" />

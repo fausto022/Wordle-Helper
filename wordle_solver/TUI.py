@@ -24,7 +24,8 @@ class guess:
         self.pos = 0
 
     def redraw_letter(self, pos: int = None) -> None:
-        """Redraws the letter in the specified position at its corresponding screen position, redraws the currently highlighted letter if pos is empty"""
+        """Redraws the letter in the specified position at its corresponding screen position, 
+        redraws the currently highlighted letter if pos is empty"""
         if pos == None:
             pos = self.pos
         self._pWindow.addch(self._y, (self._x + pos*2), self.pos_l(pos),  self.l_color(pos) | curses.A_UNDERLINE)
@@ -35,7 +36,8 @@ class guess:
             self.redraw_letter(i)
 
     def l_color(self, pos: int = None) -> int:
-        """Returns the color_pair of a specified position, returns the color_pair of the currently highlighted letter if pos is empty"""
+        """Returns the color_pair of a specified position, returns the color_pair of the 
+        currently highlighted letter if pos is empty"""
         if pos == None:
             pos = self.pos
         return curses.color_pair(self.letters[pos]['c'])
@@ -58,7 +60,7 @@ class guess:
             self.pos = max(0, min(self.pos + dir, 4))
 
     def change_l_col(self, dir, pos: int = None) -> int:
-        """Change the color of the specified position, changes the color the currently highlited letter if pos is empty"""
+        """Change the color of the specified position by one, changes the color the currently highlited letter if pos is empty"""
         if pos == None:
             pos = self.pos
         new_col = (self.letters[pos]['c'] + dir) % 3
@@ -66,6 +68,8 @@ class guess:
         return new_col
 
     def set_l_color(self, color: int, pos: int = None):
+        """Sets the color of the specified position to a specific one, changes the color the 
+        currently highlited letter if pos is empty"""
         if pos == None:
             pos = self.pos
         c = -1
@@ -99,9 +103,10 @@ class guessing_interface:
         self._window = curses.newwin(self.length, self.width, y, x)
         self._guess = guess(self._window, self._y, self._x)
         self._past_guesses = []
+        self._guesses_left = True
 
         #Create an instance of our solver
-        self._solver = solver("5_letter_words.txt")
+        self._solver = solver()
 
         #set the properties        
         self._window.box()
@@ -114,20 +119,24 @@ class guessing_interface:
 
         #Create a couple windows to display information
         self._exploratory_guess = curses.newwin(1, 24, 1, 1)
-        self._display_message(self._exploratory_guess, "Exploratory: stoae.")
+        self._display_message(self._exploratory_guess, "Exploratory: aurei.")
 
         self._valid_guess = curses.newwin(1, 24, 2, 1)
-        self._display_message(self._valid_guess, "Correct: stoae.")
+        self._display_message(self._valid_guess, "Correct: arise.")
+
+        self._number_of_left = curses.newwin(1, 11, self.length-2, self.width-12)
+        self._display_message(self._number_of_left, "left: " + str(len(self._solver.answers)))
 
         #create a separate window for the threaded display
-        self.possibles_display = curses.newwin(1, 8, 7, int(self.width/2 - 2.5))
+        self.possibles_display = curses.newwin(1, 24, 7, 1)
         #create a thread to show random words in the middle of the screens
         self.randoms_thread = threading.Thread(target = self._display_random_timed, args=[self.possibles_display])
         self.randoms_thread.daemon = True
         self.randoms_thread.start()
 
 
-    def _blank_prompt(self) -> None: 
+    def _blank_prompt(self) -> None:
+        """Erases the cursor and sets everything back to white and updates the internal structure's guess to a new one."""
         self._window.addstr(self._y-1, self._x, "#          ") #erases the old cursor
         self._window.addstr(self._y+1, self._x, "#          ") #erases the old cursor
         self._window.addstr(self._y, self._x, "_ _ _ _ _")
@@ -157,25 +166,57 @@ class guessing_interface:
         if not any('_' == t['l'] for t in self._guess.letters):
             #Update the solver
             self._solver.add_guess(self._guess.letters)
+            words_left = len(self._solver.answers)
+            self._number_of_left.clear()
+            print(len(str(len(self._solver.answers))))
+            self._display_message(self._number_of_left, "left: " + str(len(self._solver.answers)), x=4-len(str(len(self._solver.answers))))
 
-            #display the new words
-            best_exploratory, best_valid = self._solver.choose_word()
-            self._display_message(self._exploratory_guess, "Exploratory: " + best_exploratory + '.')
-            self._display_message(self._valid_guess, "Correct: " + best_valid + '.')
+            if words_left > 1:
+                #You're still going
+                #display the new words
+                best_exploratory, best_valid = self._solver.choose_word()
+                self._display_message(self._exploratory_guess, "Exploratory: " + best_exploratory + '.')
+                self._display_message(self._valid_guess, "Correct: " + best_valid + '.')                
+            else:
+                self._guesses_left = False
+                self._clear_screen(self.possibles_display)
+                self._clear_screen(self._exploratory_guess)
+                self._clear_screen(self._valid_guess)
+                if words_left == 0:
+                    #You lost :(
+                    defeat_msg = "No more guessing :("
+                    for i, ch in enumerate(defeat_msg):
+                        self._window.addch(7, int((self.width - len(defeat_msg)) / 2) + i, ch, curses.color_pair(i % 3))
+                    self._window.addstr(self._y-1, self._x, "# # # # #")
+                    self._window.addstr(self._y+1, self._x, "# # # # #")
+                elif words_left == 1:
+                    #You won!
+                    _, best_valid = self._solver.choose_word()
+                    word_to_show = ''
+                    for ch in best_valid:
+                        word_to_show = word_to_show + ch + ' '
+                    self._window.addstr(self._y-1, self._x, "! ! ! ! !")
+                    self._window.addstr(self._y+1, self._x, "! ! ! ! !")
+                    victory_msg = "!!!You won!!!"
+                    for i, ch in enumerate(victory_msg):
+                        self._window.addch(7, int((self.width - len(victory_msg)) / 2) + i, ch, curses.color_pair(i % 3))
+                    self._window.addstr(self._y, self._x, word_to_show[:-1], curses.color_pair(green))
+                    self._window.refresh()
+                    
 
             #Only create a new prompt if we are not at the last guess
-            if len(self._past_guesses) < 5:
+            if len(self._past_guesses) < 5 and self._guesses_left:
                 self._past_guesses.append(self._guess)
                 for past_guess in self._past_guesses:
                     past_guess.translate_up(2)
                     past_guess.display_word()
                     self._blank_prompt()
             else:
-                self._window.addstr(self._y-1, self._x, "          ") #erases the old cursor
-                self._window.addstr(self._y+1, self._x, "          ") #erases the old cursor            
+                #You've reached your last guess
+                self._guesses_left = False
 
     def manage_input(self, key: int) -> None:
-        if len(self._past_guesses) < 6:
+        if self._guesses_left:
             if isLetter(key):
                 self._guess.change_l(chr(key).lower())
                 self._guess.redraw_letter()
@@ -200,10 +241,17 @@ class guessing_interface:
         screen.addstr(y, x, message)
         screen.refresh()
 
+    def _clear_screen(self, screen: 'curses._CursesWindow') -> None:
+        screen.clear()
+        screen.refresh()
+
     def _display_random_timed(self, screen: 'curses._CursesWindow') -> None:
         while True:
-            self._display_message(screen, choice(self._solver.valid_words))
-            time.sleep(1)
+            if len(self._solver.answers) > 1:
+                self._display_message(screen, choice(self._solver.answers), x = int(self.width/2 - 3))
+                time.sleep(1)
+            else:
+                break
 
 
 def main(screen: 'curses._CursesWindow'):
@@ -228,9 +276,7 @@ def main(screen: 'curses._CursesWindow'):
         if key == 3: #if ctrl+c is pressed, quit.
             break
         else:
-            #screen.addch(int(terminal_y/2), int(terminal_x/2), key)
-            guessing_window.manage_input(key)  
-
+            guessing_window.manage_input(key)
     curses.endwin()
 
 curses.wrapper(main)
