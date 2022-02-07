@@ -127,6 +127,9 @@ class guessing_interface:
         self._number_of_left = curses.newwin(1, 11, self.length-2, self.width-12)
         self._display_message(self._number_of_left, "left: " + str(len(self._solver.answers)))
 
+        self._number_of_left = curses.newwin(1, 11, self.length-2, self.width-12)
+        self._display_message(self._number_of_left, "left: " + str(len(self._solver.answers)))
+
         #create a separate window for the threaded display
         self.possibles_display = curses.newwin(1, 24, 7, 1)
         #create a thread to show random words in the middle of the screens
